@@ -1,0 +1,14 @@
+[
+    {
+        "mistake": "Nested Loops",
+        "feedback": "Although correct, this approach compares too many pairs."
+    },
+    {
+        "mistake": "Returning Numbers",
+        "feedback": "The problem expects indices, not values."
+    },
+    {
+        "mistake": "Wrong Dictionary Order",
+        "feedback": "Think about whether to search first or insert first."
+    }
+]

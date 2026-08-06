@@ -1,0 +1,14 @@
+[
+    {
+        "concept": "Hash Map",
+        "description": "Stores key-value pairs for fast lookup."
+    },
+    {
+        "concept": "Complement",
+        "description": "The value required to reach the target."
+    },
+    {
+        "concept": "Dictionary Lookup",
+        "description": "Allows nearly constant time searching."
+    }
+]

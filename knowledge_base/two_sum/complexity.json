@@ -1,0 +1,10 @@
+{
+    "bruteforce": {
+        "time": "O(n²)",
+        "space": "O(1)"
+    },
+    "optimized": {
+        "time": "O(n)",
+        "space": "O(n)"
+    }
+}

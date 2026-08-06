@@ -1,0 +1,18 @@
+[
+    {
+        "level": 1,
+        "hint": "Can you think of a way to inspect every element in the array?"
+    },
+    {
+        "level": 2,
+        "hint": "Do you really need to compare every pair?"
+    },
+    {
+        "level": 3,
+        "hint": "Can you remember numbers you've already visited?"
+    },
+    {
+        "level": 4,
+        "hint": "What value do you need to find to reach the target?"
+    }
+]
