@@ -16,7 +16,7 @@ KNOWLEDGE_BASE_ROOT = Path(__file__).resolve().parent.parent / "knowledge_base"
 
 # Files expected inside each problem's knowledge base folder.
 # "mistake" is singular to match the on-disk filename (mistake.json).
-_FILES = ("metadata", "concepts", "hints", "mistake", "complexity")
+_FILES = ("metadata", "concepts", "hints", "mistakes", "complexity")
 
 
 def _read_json(path: Path) -> Any:

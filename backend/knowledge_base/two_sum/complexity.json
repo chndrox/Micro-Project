@@ -1,0 +1,16 @@
+[
+  {
+    "id": "brute_force_complexity",
+    "milestone": "brute_force",
+    "time": "O(n^2)",
+    "space": "O(1)",
+    "explanation": "The nested loop compares nearly every pair, so time grows with the square of the array length. No extra memory is used beyond the loop variables."
+  },
+  {
+    "id": "optimized_complexity",
+    "milestone": "apply_hash_map_correctly",
+    "time": "O(n)",
+    "space": "O(n)",
+    "explanation": "Each element is visited once, and hash map lookups are constant time on average, so the total work grows linearly with the array length. The trade-off is using extra memory to store seen values."
+  }
+]
