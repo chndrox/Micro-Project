@@ -1,7 +1,23 @@
 {
-    "problem_id": 1,
-    "title": "Two Sum",
-    "difficulty": "Easy",
-    "topic": "Array",
-    "pattern": "Hash Map"
+  "id": "two_sum",
+  "title": "Two Sum",
+  "language": "python",
+  "statement": "Given an array of integers nums and an integer target, return the indices of the two numbers such that they add up to target. Assume exactly one solution exists, and you may not use the same element twice.",
+  "constraints": [
+    "2 <= nums.length <= 10^4",
+    "-10^9 <= nums[i] <= 10^9",
+    "-10^9 <= target <= 10^9",
+    "Exactly one valid answer exists"
+  ],
+  "examples": [
+    { "input": "nums = [2,7,11,15], target = 9", "output": "[0,1]" },
+    { "input": "nums = [3,2,4], target = 6", "output": "[1,2]" }
+  ],
+  "milestones": [
+    "brute_force",
+    "recognize_inefficiency",
+    "discover_complement",
+    "introduce_hash_map",
+    "apply_hash_map_correctly"
+  ]
 }

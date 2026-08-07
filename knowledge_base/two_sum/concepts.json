@@ -1,14 +1,32 @@
 [
-    {
-        "concept": "Hash Map",
-        "description": "Stores key-value pairs for fast lookup."
-    },
-    {
-        "concept": "Complement",
-        "description": "The value required to reach the target."
-    },
-    {
-        "concept": "Dictionary Lookup",
-        "description": "Allows nearly constant time searching."
-    }
+  {
+    "id": "nested_iteration",
+    "milestone": "brute_force",
+    "title": "Nested iteration (brute force pairing)",
+    "explanation": "Checking every possible pair of elements means looping over the array once, and for each element, looping over the rest of the array again to compare. This guarantees you'll eventually see every pair, but it examines many pairs that were never going to work."
+  },
+  {
+    "id": "time_complexity",
+    "milestone": "recognize_inefficiency",
+    "title": "Why nested loops get expensive",
+    "explanation": "A loop inside a loop means the number of comparisons grows with the square of the input size, not the size itself. Doubling the array size roughly quadruples the work. This is worth noticing before optimizing, not after -- it's the signal that a better approach probably exists."
+  },
+  {
+    "id": "complement_pairing",
+    "milestone": "discover_complement",
+    "title": "Thinking in complements",
+    "explanation": "Instead of asking 'does some pair of numbers add up to target', you can ask a smaller question for each number one at a time: 'have I already seen the specific number that would complete this pair?' That specific number is target minus the current number."
+  },
+  {
+    "id": "hash_map_lookup",
+    "milestone": "introduce_hash_map",
+    "title": "Constant-time lookup with a hash map",
+    "explanation": "A hash map lets you check 'have I seen this value before' without scanning through everything you've seen so far. That turns a question that used to require a loop into a single, fast lookup."
+  },
+  {
+    "id": "single_pass_ordering",
+    "milestone": "apply_hash_map_correctly",
+    "title": "Why check-then-store order matters",
+    "explanation": "If you check the hash map for the complement before adding the current number to it, you avoid accidentally matching a number with itself. Doing this in one pass means you never need a second loop."
+  }
 ]

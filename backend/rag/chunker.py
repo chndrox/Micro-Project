@@ -1,124 +1,99 @@
-from typing import List, Dict, Any
+"""
+backend/rag/chunker.py
+
+Turns loaded knowledge-base entries into small, retrievable "chunks":
+one chunk per concept, per mistake, per complexity note, per hint.
+Each chunk carries metadata (type, milestone, source id) so retrieval
+can filter by milestone before -- or instead of -- ranking by
+embedding similarity.
+
+This is deliberately NOT paragraph-splitting long documents, which is
+the usual RAG chunking problem. Every entry in our knowledge base is
+already short and atomic by design (see architecture doc): one
+knowledge-base entry = one chunk, always. No sliding windows, no
+overlap logic needed.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Literal
+
+ChunkType = Literal["concept", "mistake", "complexity", "hint"]
 
 
-class Chunker:
+@dataclass(frozen=True)
+class Chunk:
+    id: str                  # stable id, e.g. "concept:hash_map_lookup"
+    type: ChunkType
+    milestone: str | None     # which milestone this chunk belongs to
+    text: str                  # the text that actually gets embedded
+    payload: dict = field(default_factory=dict)  # original JSON entry, for reconstruction
+
+
+def chunk_knowledge(problem_id: str, knowledge: dict) -> list[Chunk]:
     """
-    Converts loaded knowledge into standardized chunks
-    that can be embedded into a vector database.
+    knowledge is the dict returned by knowledge_load.load_problem_knowledge.
+    Returns a flat list of Chunks ready to be embedded.
     """
+    chunks: list[Chunk] = []
+    chunks.extend(_chunk_concepts(knowledge.get("concepts", [])))
+    chunks.extend(_chunk_mistakes(knowledge.get("mistake", [])))
+    chunks.extend(_chunk_complexity(knowledge.get("complexity", [])))
+    chunks.extend(_chunk_hints(knowledge.get("hints", [])))
+    return chunks
 
-    def __init__(self):
-        self.documents = []
-        self.doc_id = 1
 
-    def _create_document(
-        self,
-        problem: str,
-        category: str,
-        title: str,
-        text: str,
-        metadata: Dict[str, Any]
-    ):
-        """Creates one standardized document."""
+def _chunk_concepts(concepts: list[dict]) -> list[Chunk]:
+    return [
+        Chunk(
+            id=f"concept:{c['id']}",
+            type="concept",
+            milestone=c.get("milestone"),
+            text=f"{c['title']}. {c['explanation']}",
+            payload=c,
+        )
+        for c in concepts
+    ]
 
-        document = {
-            "id": self.doc_id,
-            "problem": problem,
-            "category": category,
-            "title": title,
-            "text": text,
-            "metadata": metadata
-        }
 
-        self.documents.append(document)
-        self.doc_id += 1
+def _chunk_mistakes(mistakes: list[dict]) -> list[Chunk]:
+    return [
+        Chunk(
+            id=f"mistake:{m['id']}",
+            type="mistake",
+            milestone=m.get("milestone"),
+            text=f"Common mistake: {m['description']}",
+            payload=m,
+        )
+        for m in mistakes
+    ]
 
-    def create_chunks(self, knowledge: Dict[str, Any]) -> List[Dict]:
-        """
-        Converts loaded JSON knowledge into
-        standardized documents.
-        """
 
-        self.documents = []
-        self.doc_id = 1
+def _chunk_complexity(entries: list[dict]) -> list[Chunk]:
+    return [
+        Chunk(
+            id=f"complexity:{e['id']}",
+            type="complexity",
+            milestone=e.get("milestone"),
+            text=f"Time {e.get('time', '?')}, space {e.get('space', '?')}. {e.get('explanation', '')}",
+            payload=e,
+        )
+        for e in entries
+    ]
 
-        metadata = knowledge["metadata"]
 
-        problem = metadata["title"]
-
-        common_metadata = {
-            "difficulty": metadata["difficulty"],
-            "topic": metadata["topic"],
-            "pattern": metadata["pattern"]
-        }
-
-        # --------------------------
-        # Concepts
-        # --------------------------
-
-        for concept in knowledge.get("concepts", []):
-
-            self._create_document(
-                problem=problem,
-                category="concept",
-                title=concept["concept"],
-                text=concept["description"],
-                metadata=common_metadata
-            )
-
-        # --------------------------
-        # Hints
-        # --------------------------
-
-        for hint in knowledge.get("hints", []):
-
-            self._create_document(
-                problem=problem,
-                category="hint",
-                title=f"Hint Level {hint['level']}",
-                text=hint["hint"],
-                metadata=common_metadata
-            )
-
-        # --------------------------
-        # Mistakes
-        # --------------------------
-
-        for mistake in knowledge.get("mistakes", []):
-
-            self._create_document(
-                problem=problem,
-                category="mistake",
-                title=mistake["mistake"],
-                text=mistake["feedback"],
-                metadata=common_metadata
-            )
-
-        # --------------------------
-        # Complexity
-        # --------------------------
-
-        complexity = knowledge.get("complexity", {})
-
-        if complexity:
-
-            brute = complexity.get("bruteforce", {})
-            opt = complexity.get("optimized", {})
-
-            self._create_document(
-                problem=problem,
-                category="complexity",
-                title="Brute Force Complexity",
-                text=f"Time Complexity: {brute.get('time')} | Space Complexity: {brute.get('space')}",
-                metadata=common_metadata
-            )
-
-            self._create_document(
-                problem=problem,
-                category="complexity",
-                title="Optimized Complexity",
-                text=f"Time Complexity: {opt.get('time')} | Space Complexity: {opt.get('space')}",
-                metadata=common_metadata
-            )
-
-        return self.documents
+def _chunk_hints(hints: list[dict]) -> list[Chunk]:
+    # Hints are chunked too so they can be part of the searchable corpus
+    # (used for TF-IDF vocabulary fitting and as a semantic fallback),
+    # but retriver.py always fetches the exact hint by (milestone, level)
+    # rather than relying on similarity search for hint selection itself.
+    return [
+        Chunk(
+            id=f"hint:{h['milestone']}:{h['level']}",
+            type="hint",
+            milestone=h.get("milestone"),
+            text=h["text"],
+            payload=h,
+        )
+        for h in hints
+    ]
