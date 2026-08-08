@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "input": "nums = [2,7,11,15]\ntarget = 9",
+    "expected": "[0,1]",
+    "is_sample": true
+  },
+  {
+    "id": 2,
+    "input": "nums = [3,2,4]\ntarget = 6",
+    "expected": "[1,2]",
+    "is_sample": true
+  },
+  {
+    "id": 3,
+    "input": "nums = [3,3]\ntarget = 6",
+    "expected": "[0,1]",
+    "is_sample": true
+  },
+  {
+    "id": 4,
+    "input": "nums = [0,4,3,0]\ntarget = 0",
+    "expected": "[0,3]",
+    "is_sample": false
+  },
+  {
+    "id": 5,
+    "input": "nums = [-1,-2,-3,-4,-5]\ntarget = -8",
+    "expected": "[2,4]",
+    "is_sample": false
+  }
+]
